@@ -377,30 +377,31 @@ actor LiveUserService: UserService {
         print("👤 UserService: Wallet found, fetching real balances")
         await refreshBalances()
         
-        // Fetch new transactions since last launch
-        do {
-            let walletAddress = try await walletService.getPublicKey()
-            
-            if let initTimestamp = await walletService.getInitializationTimestamp() {
-                print("📜 UserService: Syncing transaction history...")
-                try await transactionHistoryService.fetchNewTransactions(
-                    walletAddress: walletAddress,
-                    initTimestamp: initTimestamp
-                )
+        // Sync transactions in BACKGROUND - don't block app launch
+        // Processed transactions are cached, so History screen loads instantly
+        Task {
+            do {
+                let walletAddress = try await walletService.getPublicKey()
                 
-                let txCount = await transactionHistoryService.getTransactionCount()
-                print("✅ UserService: Transaction history synced (\(txCount) total transactions)")
-                
-                // Submit all historical tokens for indexing
-                await submitHistoricalTokensForIndexing()
-                
-                // Start polling for new transactions
-                await transactionHistoryService.startPolling(walletAddress: walletAddress)
-            } else {
-                print("⚠️ UserService: No init timestamp found, skipping transaction sync")
+                if let initTimestamp = await walletService.getInitializationTimestamp() {
+                    print("📜 UserService: Syncing transaction history (background)...")
+                    try await transactionHistoryService.fetchNewTransactions(
+                        walletAddress: walletAddress,
+                        initTimestamp: initTimestamp
+                    )
+                    
+                    let txCount = await transactionHistoryService.getTransactionCount()
+                    print("✅ UserService: Transaction history synced (\(txCount) total transactions)")
+                    
+                    // Submit all historical tokens for indexing
+                    await submitHistoricalTokensForIndexing()
+                    
+                    // Start polling for new transactions
+                    await transactionHistoryService.startPolling(walletAddress: walletAddress)
+                }
+            } catch {
+                print("⚠️ UserService: Failed to sync transactions: \(error)")
             }
-        } catch {
-            print("⚠️ UserService: Failed to sync transactions: \(error)")
         }
         
         // Start auto-refresh every 5 seconds

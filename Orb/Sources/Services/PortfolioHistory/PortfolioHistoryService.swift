@@ -12,6 +12,9 @@ protocol PortfolioHistoryService: Sendable {
     
     /// Start background fetching with automatic retries for queued/indexing tokens
     func startBackgroundFetch() async
+    
+    /// Clear all cached portfolio data (call on logout)
+    func clearCache() async
 }
 
 // MARK: - Models
@@ -384,6 +387,15 @@ actor LivePortfolioHistoryService: PortfolioHistoryService {
     
     private func setCachedHistory(_ history: PortfolioHistory) async {
         cachedHistory = history
+    }
+    
+    func clearCache() async {
+        backgroundFetchTask?.cancel()
+        backgroundFetchTask = nil
+        ongoingFetchTask?.cancel()
+        ongoingFetchTask = nil
+        cachedHistory = nil
+        print("🗑️ PortfolioHistoryService: Cache cleared")
     }
     
     // MARK: - Private Helper

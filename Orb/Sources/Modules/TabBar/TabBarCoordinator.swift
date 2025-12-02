@@ -57,8 +57,23 @@ struct TabBarCoordinator {
             case .confirmExitWallet:
                 state.showExitConfirmation = false
                 return .run { send in
+                    @Dependency(\.transactionHistoryService) var transactionHistoryService
+                    @Dependency(\.portfolioHistoryService) var portfolioHistoryService
+                    
                     do {
+                        // Clear all user data
+                        print("🗑️ Logging out: Clearing all user data...")
+                        
+                        // 1. Clear transaction history (UserDefaults)
+                        await transactionHistoryService.clearHistory()
+                        
+                        // 2. Clear portfolio history cache
+                        await portfolioHistoryService.clearCache()
+                        
+                        // 3. Delete wallet from Keychain (last, as it's the critical one)
                         try await walletService.deleteWallet()
+                        
+                        print("✅ All user data cleared")
                         await send(.walletDeleted)
                     } catch {
                         print("❌ Failed to delete wallet: \(error)")

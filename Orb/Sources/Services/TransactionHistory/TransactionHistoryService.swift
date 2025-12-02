@@ -20,11 +20,11 @@ protocol TransactionHistoryService: Actor {
     /// 3. If interrupted, continue fetching OLD transactions back to init timestamp
     func fetchNewTransactions(walletAddress: String, initTimestamp: Int) async throws
     
-    /// Get all stored transactions
-    func getTransactions() async -> [HeliusEnhancedTransaction]
+    /// Get all stored processed transactions (ready for display)
+    func getProcessedTransactions() async -> [ProcessedTransaction]
     
-    /// Stream that emits whenever transactions are updated
-    func transactionsStream() -> AsyncStream<[HeliusEnhancedTransaction]>
+    /// Stream that emits whenever transactions are updated (pre-processed for display)
+    func processedTransactionsStream() -> AsyncStream<[ProcessedTransaction]>
     
     /// Get transactions count
     func getTransactionCount() async -> Int
@@ -65,12 +65,18 @@ actor LiveTransactionHistoryService: TransactionHistoryService {
     @Dependency(\.heliusService)
     private var heliusService: HeliusService
     
+    @Dependency(\.jupiterService)
+    private var jupiterService: JupiterService
+    
     // MARK: - Storage
     
     private let storageKey = "com.os.orb.transactionHistory"
+    private let processedStorageKey = "com.os.orb.processedTransactions"
     
     private var cachedTransactions: [HeliusEnhancedTransaction] = []
+    private var cachedProcessedTransactions: [ProcessedTransaction] = []
     private var isFetching = false
+    private var lastProcessedRawCount: Int = 0  // Track if raw data changed
     
     // Cache current balances to avoid repeated API calls
     private var cachedCurrentBalances: [String: Double]?
@@ -81,7 +87,8 @@ actor LiveTransactionHistoryService: TransactionHistoryService {
     private var isPolling = false
     
     // Stream continuations with IDs for tracking
-    private var streamContinuations: [UUID: AsyncStream<[HeliusEnhancedTransaction]>.Continuation] = [:]
+    private typealias ProcessedTransactionsContinuation = AsyncStream<[ProcessedTransaction]>.Continuation
+    private var streamContinuations: [UUID: ProcessedTransactionsContinuation] = [:]
     
     // MARK: - Public Methods
     
@@ -375,14 +382,14 @@ actor LiveTransactionHistoryService: TransactionHistoryService {
         return oldTransactions
     }
     
-    func getTransactions() async -> [HeliusEnhancedTransaction] {
-        if cachedTransactions.isEmpty {
-            await loadTransactions()
+    func getProcessedTransactions() async -> [ProcessedTransaction] {
+        if cachedProcessedTransactions.isEmpty && !cachedTransactions.isEmpty {
+            await processAndCacheTransactions()
         }
-        return cachedTransactions
+        return cachedProcessedTransactions
     }
     
-    func transactionsStream() -> AsyncStream<[HeliusEnhancedTransaction]> {
+    func processedTransactionsStream() -> AsyncStream<[ProcessedTransaction]> {
         AsyncStream { continuation in
             // Generate unique ID for this stream
             let id = UUID()
@@ -391,8 +398,8 @@ actor LiveTransactionHistoryService: TransactionHistoryService {
             Task {
                 await self.addContinuation(id: id, continuation: continuation)
                 
-                // Immediately send current cached transactions
-                continuation.yield(await self.cachedTransactions)
+                // Immediately send current processed transactions
+                continuation.yield(await self.cachedProcessedTransactions)
             }
             
             // Clean up when stream is cancelled
@@ -405,7 +412,7 @@ actor LiveTransactionHistoryService: TransactionHistoryService {
         }
     }
     
-    private func addContinuation(id: UUID, continuation: AsyncStream<[HeliusEnhancedTransaction]>.Continuation) {
+    private func addContinuation(id: UUID, continuation: ProcessedTransactionsContinuation) {
         streamContinuations[id] = continuation
     }
     
@@ -430,9 +437,12 @@ actor LiveTransactionHistoryService: TransactionHistoryService {
     func clearHistory() async {
         await stopPolling()
         cachedTransactions = []
+        cachedProcessedTransactions = []
         cachedCurrentBalances = nil
         currentBalancesWalletAddress = nil
+        lastProcessedRawCount = 0
         UserDefaults.standard.removeObject(forKey: storageKey)
+        UserDefaults.standard.removeObject(forKey: processedStorageKey)
         print("🗑️ TransactionHistoryService: History and balance cache cleared")
     }
     
@@ -744,9 +754,12 @@ actor LiveTransactionHistoryService: TransactionHistoryService {
             UserDefaults.standard.set(data, forKey: storageKey)
             print("💾 TransactionHistoryService: Stored \(transactions.count) transactions")
             
-            // Notify all stream subscribers
+            // Process transactions for display
+            await processAndCacheTransactions()
+            
+            // Notify all stream subscribers with processed transactions
             for continuation in streamContinuations.values {
-                continuation.yield(transactions)
+                continuation.yield(cachedProcessedTransactions)
             }
         } catch {
             print("❌ TransactionHistoryService: Failed to store transactions: \(error)")
@@ -754,8 +767,10 @@ actor LiveTransactionHistoryService: TransactionHistoryService {
     }
     
     private func loadTransactions() async {
+        // Load raw transactions
         guard let data = UserDefaults.standard.data(forKey: storageKey) else {
             cachedTransactions = []
+            cachedProcessedTransactions = []
             return
         }
         
@@ -763,9 +778,91 @@ actor LiveTransactionHistoryService: TransactionHistoryService {
             let decoder = JSONDecoder()
             cachedTransactions = try decoder.decode([HeliusEnhancedTransaction].self, from: data)
             print("📂 TransactionHistoryService: Loaded \(cachedTransactions.count) transactions from storage")
+            
+            // Try to load cached processed transactions first
+            if let processedData = UserDefaults.standard.data(forKey: processedStorageKey) {
+                cachedProcessedTransactions = try decoder.decode([ProcessedTransaction].self, from: processedData)
+                lastProcessedRawCount = cachedTransactions.count
+                print("📂 TransactionHistoryService: Loaded \(cachedProcessedTransactions.count) processed transactions from cache")
+                
+                // Emit immediately so UI can show
+                for continuation in streamContinuations.values {
+                    continuation.yield(cachedProcessedTransactions)
+                }
+                return
+            }
+            
+            // No cached processed transactions - need to process
+            await processAndCacheTransactions()
         } catch {
             print("❌ TransactionHistoryService: Failed to load transactions: \(error)")
             cachedTransactions = []
+            cachedProcessedTransactions = []
+        }
+    }
+    
+    /// Process raw transactions into display-ready format
+    private func processAndCacheTransactions() async {
+        // Skip if raw count hasn't changed (already processed)
+        guard cachedTransactions.count != lastProcessedRawCount else {
+            return
+        }
+        
+        // Filter out NFTs and tiny transfers
+        let fungibleTransactions = cachedTransactions.filter { transaction in
+            let type = transaction.type.uppercased()
+            
+            // Filter out NFTs
+            guard !type.contains("NFT") && 
+                   type != "NFT_MINT" && 
+                   type != "NFT_LISTING" && 
+                   type != "NFT_SALE" &&
+                   type != "NFT_BID" &&
+                   type != "COMPRESSED_NFT_MINT" &&
+                   type != "COMPRESSED_NFT_TRANSFER" else {
+                return false
+            }
+            
+            // Filter out tiny SOL-only transfers but keep token transfers
+            if type.contains("TRANSFER") {
+                if transaction.tokenTransfers?.isEmpty == false {
+                    return true
+                }
+                if let nativeTransfer = transaction.nativeTransfers?.first {
+                    return nativeTransfer.amount >= 5
+                }
+                return false
+            }
+            
+            return true
+        }
+        
+        // Process transactions with Jupiter metadata
+        var processedTransactions: [ProcessedTransaction] = []
+        for (index, transaction) in fungibleTransactions.enumerated() {
+            let processed = await TransactionProcessor.process(transaction, jupiterService: jupiterService)
+            processedTransactions.append(processed)
+            
+            // Emit early after first 5 transactions for fast UI
+            if index == 4 {
+                cachedProcessedTransactions = processedTransactions
+                for continuation in streamContinuations.values {
+                    continuation.yield(processedTransactions)
+                }
+            }
+        }
+        
+        cachedProcessedTransactions = processedTransactions
+        lastProcessedRawCount = cachedTransactions.count
+        print("✅ TransactionHistoryService: Processed \(processedTransactions.count) transactions")
+        
+        // Persist processed transactions
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(processedTransactions)
+            UserDefaults.standard.set(data, forKey: processedStorageKey)
+        } catch {
+            print("⚠️ TransactionHistoryService: Failed to cache processed transactions: \(error)")
         }
     }
     

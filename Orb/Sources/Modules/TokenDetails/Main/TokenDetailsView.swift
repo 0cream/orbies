@@ -372,7 +372,7 @@ struct TokenDetailsBalanceView: View {
                             size: 24
                         )
                         
-                        Text(String(format: "%.1f tokens", tokensCount))
+                        Text(String(format: "%.4f tokens", tokensCount))
                             .font(.system(size: 24, weight: .bold))
                             .foregroundStyle(.white)
                             .contentTransition(.numericText())

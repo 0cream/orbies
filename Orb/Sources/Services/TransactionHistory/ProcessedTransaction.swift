@@ -2,7 +2,7 @@ import Foundation
 import SolanaSwift
 
 /// A processed transaction with clean, ready-to-display data
-struct ProcessedTransaction: Identifiable, Sendable {
+struct ProcessedTransaction: Identifiable, Sendable, Codable {
     let id: String
     let signature: String
     let type: String
@@ -17,7 +17,7 @@ struct ProcessedTransaction: Identifiable, Sendable {
     // Original transaction for details
     let originalTransaction: HeliusEnhancedTransaction
     
-    struct TokenAmount: Sendable {
+    struct TokenAmount: Sendable, Codable {
         let value: Double
         let symbol: String
         let mint: String
