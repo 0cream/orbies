@@ -1,4 +1,5 @@
 import Foundation
+import SolanaSwift
 
 /// A processed transaction with clean, ready-to-display data
 struct ProcessedTransaction: Identifiable, Sendable {
@@ -33,6 +34,17 @@ struct ProcessedTransaction: Identifiable, Sendable {
             return "\(amountStr) \(symbol)"
         }
     }
+    
+    /// Determines if this is actually a swap based on the amounts
+    /// Returns true if we have both received and spent amounts with different tokens
+    var isSwap: Bool {
+        guard let received = receivedAmount,
+              let spent = spentAmount else {
+            return false
+        }
+        // It's a swap if the tokens are different
+        return received.mint != spent.mint
+    }
 }
 
 // MARK: - Transaction Processor
@@ -56,6 +68,23 @@ enum TransactionProcessor {
         )
     }
     
+    /// Get expected token account address for a given wallet and mint
+    private static func getExpectedTokenAccount(wallet: String, mint: String) -> String? {
+        do {
+            let walletPublicKey = try PublicKey(string: wallet)
+            let mintPublicKey = try PublicKey(string: mint)
+            let tokenAccount = try PublicKey.associatedTokenAddress(
+                walletAddress: walletPublicKey,
+                tokenMintAddress: mintPublicKey,
+                tokenProgramId: TokenProgram.id
+            )
+            return tokenAccount.base58EncodedString
+        } catch {
+            print("❌ Failed to derive token account for wallet: \(wallet), mint: \(mint)")
+            return nil
+        }
+    }
+    
     /// Extract received and spent amounts from a transaction
     private static func extractAmounts(
         from transaction: HeliusEnhancedTransaction,
@@ -72,7 +101,7 @@ enum TransactionProcessor {
             if let output = swapEvent.tokenOutputs?.first {
                 let amount = Double(output.rawTokenAmount.tokenAmount) ?? 0
                 let value = amount / pow(10, Double(output.rawTokenAmount.decimals))
-                let symbol = getTokenSymbol(output.mint)
+                let symbol = await getTokenSymbol(output.mint, jupiterService: jupiterService)
                 let iconURL = await jupiterService.getTokenIcon(mint: output.mint)
                 received = ProcessedTransaction.TokenAmount(value: value, symbol: symbol, mint: output.mint, iconURL: iconURL)
             } else if let nativeOutput = swapEvent.nativeOutput {
@@ -91,7 +120,7 @@ enum TransactionProcessor {
             if let input = swapEvent.tokenInputs?.first {
                 let amount = Double(input.rawTokenAmount.tokenAmount) ?? 0
                 let value = amount / pow(10, Double(input.rawTokenAmount.decimals))
-                let symbol = getTokenSymbol(input.mint)
+                let symbol = await getTokenSymbol(input.mint, jupiterService: jupiterService)
                 let iconURL = await jupiterService.getTokenIcon(mint: input.mint)
                 spent = ProcessedTransaction.TokenAmount(value: value, symbol: symbol, mint: input.mint, iconURL: iconURL)
             } else if let nativeInput = swapEvent.nativeInput {
@@ -108,10 +137,11 @@ enum TransactionProcessor {
         }
         
         // 2. Try tokenTransfers/nativeTransfers for simple transfers
-        // Skip this for SWAP transactions as they need both amounts
-        if received == nil && spent == nil && !transaction.type.uppercased().contains("SWAP") {
+        // Skip for SWAP transactions or multiple token transfers (likely swaps even if not labeled)
+        let hasMultipleTokenTransfers = (transaction.tokenTransfers?.count ?? 0) > 1
+        if received == nil && spent == nil && !transaction.type.uppercased().contains("SWAP") && !hasMultipleTokenTransfers {
             if let tokenTransfer = transaction.tokenTransfers?.first {
-                let symbol = getTokenSymbol(tokenTransfer.mint)
+                let symbol = await getTokenSymbol(tokenTransfer.mint, jupiterService: jupiterService)
                 let isOutgoing = transaction.feePayer == tokenTransfer.fromUserAccount
                 let iconURL = await jupiterService.getTokenIcon(mint: tokenTransfer.mint)
                 
@@ -153,60 +183,91 @@ enum TransactionProcessor {
             }
         }
         
-        // 3. Fallback to accountData for complex transactions
-        if received == nil && spent == nil, let accountData = transaction.accountData {
+        // 3. Fallback to accountData for complex transactions (especially swaps)
+        // Use two-pass approach: collect tokens first, then SOL with correct threshold
+        if received == nil || spent == nil, let accountData = transaction.accountData {
+            var positiveChanges: [(value: Double, symbol: String, mint: String, iconURL: String?)] = []
+            var negativeChanges: [(value: Double, symbol: String, mint: String, iconURL: String?)] = []
+            
+            // PASS 1: Collect all token balance changes first
             for account in accountData {
-                // Check token balance changes
                 if let changes = account.tokenBalanceChanges {
                     for change in changes {
-                        guard change.userAccount == userAccount else { continue }
+                        // Verify this token account belongs to the user
+                        let belongsToUser = change.userAccount == userAccount ||
+                            (getExpectedTokenAccount(wallet: userAccount, mint: change.mint) == change.tokenAccount)
+                        
+                        guard belongsToUser else { continue }
                         
                         let amount = Double(change.rawTokenAmount.tokenAmount) ?? 0
                         let value = amount / pow(10, Double(change.rawTokenAmount.decimals))
-                        let symbol = getTokenSymbol(change.mint)
+                        
+                        guard abs(value) > 0.000001 else { continue }
+                        
+                        let symbol = await getTokenSymbol(change.mint, jupiterService: jupiterService)
                         let iconURL = await jupiterService.getTokenIcon(mint: change.mint)
                         
                         if value > 0 {
-                            received = ProcessedTransaction.TokenAmount(value: value, symbol: symbol, mint: change.mint, iconURL: iconURL)
+                            positiveChanges.append((value: value, symbol: symbol, mint: change.mint, iconURL: iconURL))
                         } else if value < 0 {
-                            spent = ProcessedTransaction.TokenAmount(value: abs(value), symbol: symbol, mint: change.mint, iconURL: iconURL)
+                            negativeChanges.append((value: abs(value), symbol: symbol, mint: change.mint, iconURL: iconURL))
                         }
                     }
                 }
-                
-                // Check native (SOL) balance changes for user's account
+            }
+            
+            // PASS 2: Check native SOL changes with appropriate threshold
+            // Lower threshold (0.001 SOL) for swaps, higher (0.01 SOL) for pure SOL transactions
+            let hasTokenChanges = positiveChanges.count > 0 || negativeChanges.count > 0
+            let solThreshold: Double = hasTokenChanges ? 1_000_000 : 10_000_000
+            
+            for account in accountData {
                 if account.account == userAccount {
                     let nativeChange = Double(account.nativeBalanceChange)
-                    // Exclude small amounts (likely just rent/fees)
-                    if abs(nativeChange) > 10_000_000 { // > 0.01 SOL
+                    
+                    if abs(nativeChange) > solThreshold {
                         let solAmount = abs(nativeChange) / 1_000_000_000
                         let solMint = "So11111111111111111111111111111111111111112"
                         let iconURL = await jupiterService.getTokenIcon(mint: solMint)
                         
                         if nativeChange > 0 {
-                            received = ProcessedTransaction.TokenAmount(
-                                value: solAmount,
-                                symbol: "SOL",
-                                mint: solMint,
-                                iconURL: iconURL
-                            )
+                            positiveChanges.append((value: solAmount, symbol: "SOL", mint: solMint, iconURL: iconURL))
                         } else if nativeChange < 0 {
-                            spent = ProcessedTransaction.TokenAmount(
-                                value: solAmount,
-                                symbol: "SOL",
-                                mint: solMint,
-                                iconURL: iconURL
-                            )
+                            negativeChanges.append((value: solAmount, symbol: "SOL", mint: solMint, iconURL: iconURL))
                         }
                     }
                 }
+            }
+            
+            // Select the largest changes for received/spent
+            // This ensures we show the primary tokens in a swap, not small fee/rent amounts
+            if received == nil && !positiveChanges.isEmpty {
+                let largest = positiveChanges.max(by: { $0.value < $1.value })!
+                received = ProcessedTransaction.TokenAmount(
+                    value: largest.value,
+                    symbol: largest.symbol,
+                    mint: largest.mint,
+                    iconURL: largest.iconURL
+                )
+            }
+            
+            if spent == nil && !negativeChanges.isEmpty {
+                let largest = negativeChanges.max(by: { $0.value < $1.value })!
+                spent = ProcessedTransaction.TokenAmount(
+                    value: largest.value,
+                    symbol: largest.symbol,
+                    mint: largest.mint,
+                    iconURL: largest.iconURL
+                )
             }
         }
         
         return (received, spent)
     }
     
-    private static func getTokenSymbol(_ mint: String) -> String {
+    /// Get token symbol - uses hardcoded major tokens, then Jupiter verified list, then mint prefix
+    private static func getTokenSymbol(_ mint: String, jupiterService: JupiterService) async -> String {
+        // Fast path: hardcoded major tokens
         switch mint {
         case "So11111111111111111111111111111111111111112":
             return "SOL"
@@ -218,8 +279,16 @@ enum TransactionProcessor {
             return "JUP"
         case "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263":
             return "BONK"
+        case "he1iusmfkpAdwvxLNGV8Y1iSbj4rUy6yMhEA3fotn9A":
+            return "hSOL"
         default:
-            return mint.prefix(4).uppercased()
+            // Try Jupiter verified tokens (~7k tokens)
+            if let symbol = await jupiterService.getTokenSymbol(mint: mint) {
+                return symbol
+            }
+            
+            // Fallback: first 4 characters of mint (for pump.fun and other unverified tokens)
+            return String(mint.prefix(4).uppercased())
         }
     }
 }

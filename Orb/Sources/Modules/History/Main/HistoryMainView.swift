@@ -55,13 +55,14 @@ struct HistoryMainView: View {
                                         .padding(.horizontal, 24)
                                     
                                     // Transactions for this date
-                                    VStack(spacing: 0) {
+                                    VStack(spacing: 8) {
                                         ForEach(transactions) { transaction in
                                             SimpleTransactionRow(transaction: transaction)
                                                 .contentShape(Rectangle())
                                                 .onTapGesture {
                                                     send(.didTapTransaction(transaction))
                                                 }
+                                                .padding(.horizontal, 24)
                                         }
                                     }
                                 }

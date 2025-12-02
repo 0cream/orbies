@@ -75,6 +75,9 @@ protocol JupiterService: Actor {
     /// Get token icon URL by mint address
     func getTokenIcon(mint: String) async -> String?
     
+    /// Get token symbol by mint address
+    func getTokenSymbol(mint: String) async -> String?
+    
     /// Get top traded tokens in the last 24 hours
     func getTopTradedTokens(limit: Int) async throws -> [JupiterVerifiedToken]
     
@@ -500,6 +503,21 @@ actor LiveJupiterService: JupiterService {
         
         // Find token by mint address (id)
         return cachedVerifiedTokens.first(where: { $0.id == mint })?.icon
+    }
+    
+    func getTokenSymbol(mint: String) async -> String? {
+        // Ensure tokens are loaded
+        if cachedVerifiedTokens.isEmpty {
+            do {
+                _ = try await getVerifiedTokens()
+            } catch {
+                print("⚠️ JupiterService: Failed to get token symbol - \(error.localizedDescription)")
+                return nil
+            }
+        }
+        
+        // Find token by mint address (id)
+        return cachedVerifiedTokens.first(where: { $0.id == mint })?.symbol
     }
     
     func getTokenDecimals(mint: String) async -> Int {

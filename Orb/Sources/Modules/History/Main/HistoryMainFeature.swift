@@ -34,7 +34,7 @@ struct HistoryMainFeature {
             return .run { [jupiterService] send in
                 // Subscribe to transaction updates from the stream
                 for await rawTransactions in await transactionHistoryService.transactionsStream() {
-                    // Filter out NFT transactions and tiny transfers
+                    // Filter out NFT transactions and tiny SOL-only transfers
                     let fungibleTransactions = rawTransactions.filter { transaction in
                         let type = transaction.type.uppercased()
                         
@@ -49,12 +49,19 @@ struct HistoryMainFeature {
                             return false
                         }
                         
-                        // Filter out tiny transfers (< 5 lamports = 0.000000005 SOL)
+                        // Filter out tiny SOL-only transfers (< 5 lamports = 0.000000005 SOL)
+                        // But keep transactions with token transfers (they're not just tiny SOL moves)
                         if type.contains("TRANSFER") {
+                            // If there's a token transfer, keep it regardless of SOL amount
+                            if transaction.tokenTransfers?.isEmpty == false {
+                                return true
+                            }
+                            // If there's only a native transfer, check if it's meaningful
                             if let nativeTransfer = transaction.nativeTransfers?.first {
-                                // nativeTransfer.amount is in lamports
                                 return nativeTransfer.amount >= 5
                             }
+                            // If labeled as transfer but has no transfers, filter it out
+                            return false
                         }
                         
                         return true

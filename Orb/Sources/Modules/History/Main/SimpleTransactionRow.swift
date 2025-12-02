@@ -11,16 +11,17 @@ struct SimpleTransactionRow: View {
             tokenIcons
             
             // Transaction details
-            if transaction.type.uppercased().contains("SWAP") {
+            if transaction.isSwap {
                 // Swaps: No text, just amounts on the right
                 Spacer()
             } else {
-                // Transfers: Show title only
+                // Transfers/Stakes: Show title only
                 VStack(alignment: .leading, spacing: 4) {
                     Text(transactionTitle)
                         .font(.system(size: 17, weight: .regular))
                         .foregroundStyle(.white)
                 }
+                Spacer()
             }
             
             Spacer()
@@ -28,8 +29,10 @@ struct SimpleTransactionRow: View {
             // Amounts (right side)
             amountsView
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 16)
         .padding(.vertical, 12)
+        .background(Color.white.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
     
     // MARK: - Amounts View
@@ -58,7 +61,7 @@ struct SimpleTransactionRow: View {
     @ViewBuilder
     private var tokenIcons: some View {
         ZStack(alignment: .leading) {
-            if transaction.type.uppercased().contains("SWAP"),
+            if transaction.isSwap,
                let received = transaction.receivedAmount,
                let spent = transaction.spentAmount {
                 // Swap: Show token icons with arrow
@@ -109,12 +112,12 @@ struct SimpleTransactionRow: View {
     private var transactionTitle: String {
         let type = transaction.type.uppercased()
         
-        if type.contains("SWAP"),
+        if transaction.isSwap,
            let received = transaction.receivedAmount,
            let spent = transaction.spentAmount {
             return "\(spent.symbol) → \(received.symbol)"
         } else if type.contains("TRANSFER") {
-            return transaction.receivedAmount?.symbol ?? transaction.spentAmount?.symbol ?? "Transfer"
+            return "Transfer"
         } else if type.contains("STAKE") {
             return type.contains("UNSTAKE") ? "Unstake" : "Stake"
         }
