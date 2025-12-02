@@ -1,0 +1,564 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4C2927FB2EBCDA37002827FB /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4C2927FC2EBCDA37002827FB /* NukeUI */; };
+		4C2927FE2EBCDA50002827FB /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4C2927FF2EBCDA50002827FB /* SVGKit */; };
+		4C6C5BD32EC0BB4D002744F7 /* SFSafeSymbols in Frameworks */ = {isa = PBXBuildFile; productRef = 4C6C5BD22EC0BB4D002744F7 /* SFSafeSymbols */; };
+		4CF8BFF92E8B01E600887E6B /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 4CF8BFF82E8B01E600887E6B /* ComposableArchitecture */; };
+		4CF8CA112E8B036C00887E6B /* Dependency in Frameworks */ = {isa = PBXBuildFile; productRef = 4CF8CA102E8B036C00887E6B /* Dependency */; };
+		4CF8CA142E8B03A100887E6B /* Dependency in Frameworks */ = {isa = PBXBuildFile; productRef = 4CF8CA132E8B03A100887E6B /* Dependency */; };
+		4CFF4CB42EBCDE520043DB7E /* Privy in Frameworks */ = {isa = PBXBuildFile; productRef = 4CFF4CB32EBCDE520043DB7E /* Privy */; };
+		4CFF4CB72EBCDEF90043DB7E /* OpenAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 4CFF4CB62EBCDEF90043DB7E /* OpenAPIClient */; };
+		F007B8572EDE201E00E7BD41 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = F007B8562EDE201E00E7BD41 /* QRCode */; };
+		F017E6162ED914F5001B1CF5 /* SolanaSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F017E6152ED914F5001B1CF5 /* SolanaSwift */; };
+		F05464F82EDED05E00037CF4 /* OrbIntel in Frameworks */ = {isa = PBXBuildFile; productRef = F05464F72EDED05E00037CF4 /* OrbIntel */; };
+		F05464FA2EDED05E00037CF4 /* OrbOne in Frameworks */ = {isa = PBXBuildFile; productRef = F05464F92EDED05E00037CF4 /* OrbOne */; };
+		F054678D2EDED10400037CF4 /* OrbIntel in Frameworks */ = {isa = PBXBuildFile; productRef = F054678C2EDED10400037CF4 /* OrbIntel */; };
+		F054678F2EDED10400037CF4 /* OrbOne in Frameworks */ = {isa = PBXBuildFile; productRef = F054678E2EDED10400037CF4 /* OrbOne */; };
+		F05467922EDED12A00037CF4 /* OrbIntel in Frameworks */ = {isa = PBXBuildFile; productRef = F05467912EDED12A00037CF4 /* OrbIntel */; };
+		F05467952EDED13E00037CF4 /* OrbIntel in Frameworks */ = {isa = PBXBuildFile; productRef = F05467942EDED13E00037CF4 /* OrbIntel */; };
+		F05467972EDED13E00037CF4 /* OrbOne in Frameworks */ = {isa = PBXBuildFile; productRef = F05467962EDED13E00037CF4 /* OrbOne */; };
+		F07480342EDECD780086C6FA /* OrbIntel in Frameworks */ = {isa = PBXBuildFile; productRef = F07480332EDECD780086C6FA /* OrbIntel */; };
+		F07851292EDECBF80043F3B2 /* OrbIntel in Frameworks */ = {isa = PBXBuildFile; productRef = F07851282EDECBF80043F3B2 /* OrbIntel */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		4C561F402E81E0AD004F22A5 /* Orb Invest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Orb Invest.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		4C561F422E81E0AD004F22A5 /* Orb */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Orb;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4C561F3D2E81E0AD004F22A5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F07480342EDECD780086C6FA /* OrbIntel in Frameworks */,
+				F007B8572EDE201E00E7BD41 /* QRCode in Frameworks */,
+				4C2927FB2EBCDA37002827FB /* NukeUI in Frameworks */,
+				F05464F82EDED05E00037CF4 /* OrbIntel in Frameworks */,
+				4C2927FE2EBCDA50002827FB /* SVGKit in Frameworks */,
+				F05464FA2EDED05E00037CF4 /* OrbOne in Frameworks */,
+				4C6C5BD32EC0BB4D002744F7 /* SFSafeSymbols in Frameworks */,
+				F05467922EDED12A00037CF4 /* OrbIntel in Frameworks */,
+				F054678D2EDED10400037CF4 /* OrbIntel in Frameworks */,
+				4CF8CA142E8B03A100887E6B /* Dependency in Frameworks */,
+				F05467952EDED13E00037CF4 /* OrbIntel in Frameworks */,
+				4CFF4CB42EBCDE520043DB7E /* Privy in Frameworks */,
+				F07851292EDECBF80043F3B2 /* OrbIntel in Frameworks */,
+				F054678F2EDED10400037CF4 /* OrbOne in Frameworks */,
+				F05467972EDED13E00037CF4 /* OrbOne in Frameworks */,
+				F017E6162ED914F5001B1CF5 /* SolanaSwift in Frameworks */,
+				4CFF4CB72EBCDEF90043DB7E /* OpenAPIClient in Frameworks */,
+				4CF8BFF92E8B01E600887E6B /* ComposableArchitecture in Frameworks */,
+				4CF8CA112E8B036C00887E6B /* Dependency in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4C561F372E81E0AD004F22A5 = {
+			isa = PBXGroup;
+			children = (
+				4C561F422E81E0AD004F22A5 /* Orb */,
+				4C561F412E81E0AD004F22A5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4C561F412E81E0AD004F22A5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4C561F402E81E0AD004F22A5 /* Orb Invest.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4C561F3F2E81E0AD004F22A5 /* Orb Invest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4C561F4B2E81E0AE004F22A5 /* Build configuration list for PBXNativeTarget "Orb Invest" */;
+			buildPhases = (
+				4C561F3C2E81E0AD004F22A5 /* Sources */,
+				4C561F3D2E81E0AD004F22A5 /* Frameworks */,
+				4C561F3E2E81E0AD004F22A5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4C561F422E81E0AD004F22A5 /* Orb */,
+			);
+			name = "Orb Invest";
+			packageProductDependencies = (
+				4CF8BFF82E8B01E600887E6B /* ComposableArchitecture */,
+				4CF8CA102E8B036C00887E6B /* Dependency */,
+				4CF8CA132E8B03A100887E6B /* Dependency */,
+				4CFF4CB32EBCDE520043DB7E /* Privy */,
+				4CFF4CB62EBCDEF90043DB7E /* OpenAPIClient */,
+				4C6C5BD22EC0BB4D002744F7 /* SFSafeSymbols */,
+				F017E6152ED914F5001B1CF5 /* SolanaSwift */,
+				4C2927FC2EBCDA37002827FB /* NukeUI */,
+				4C2927FF2EBCDA50002827FB /* SVGKit */,
+				F007B8562EDE201E00E7BD41 /* QRCode */,
+				F07851282EDECBF80043F3B2 /* OrbIntel */,
+				F07480332EDECD780086C6FA /* OrbIntel */,
+				F05464F72EDED05E00037CF4 /* OrbIntel */,
+				F05464F92EDED05E00037CF4 /* OrbOne */,
+				F054678C2EDED10400037CF4 /* OrbIntel */,
+				F054678E2EDED10400037CF4 /* OrbOne */,
+				F05467912EDED12A00037CF4 /* OrbIntel */,
+				F05467942EDED13E00037CF4 /* OrbIntel */,
+				F05467962EDED13E00037CF4 /* OrbOne */,
+			);
+			productName = Orb;
+			productReference = 4C561F402E81E0AD004F22A5 /* Orb Invest.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4C561F382E81E0AD004F22A5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					4C561F3F2E81E0AD004F22A5 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+				};
+			};
+			buildConfigurationList = 4C561F3B2E81E0AD004F22A5 /* Build configuration list for PBXProject "Orb Invest" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 4C561F372E81E0AD004F22A5;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				4CF8BFF72E8B01E600887E6B /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				4CF8CA122E8B03A100887E6B /* XCLocalSwiftPackageReference "Dependencies/Macros" */,
+				4C2927FA2EBCDA37002827FB /* XCRemoteSwiftPackageReference "Nuke" */,
+				4CFF4CB22EBCDE520043DB7E /* XCRemoteSwiftPackageReference "privy-ios" */,
+				4CFF4CB52EBCDEF90043DB7E /* XCLocalSwiftPackageReference "Dependencies/API" */,
+				4C6C5BD12EC0BB4D002744F7 /* XCRemoteSwiftPackageReference "SFSafeSymbols" */,
+				F017E6142ED914F5001B1CF5 /* XCLocalSwiftPackageReference "Dependencies/SolanaSwift" */,
+				4C2927FD2EBCDA50002827FB /* XCRemoteSwiftPackageReference "SVGKit" */,
+				F007B8552EDE201D00E7BD41 /* XCRemoteSwiftPackageReference "qrcode" */,
+				F05467932EDED13E00037CF4 /* XCLocalSwiftPackageReference "Dependencies/OrbIintel" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 4C561F412E81E0AD004F22A5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4C561F3F2E81E0AD004F22A5 /* Orb Invest */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4C561F3E2E81E0AD004F22A5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4C561F3C2E81E0AD004F22A5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		4C561F492E81E0AE004F22A5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 8UNQZ8NSJN;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		4C561F4A2E81E0AE004F22A5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 8UNQZ8NSJN;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		4C561F4C2E81E0AE004F22A5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y4DTBZH68D;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Orb;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_SWIFT_FLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.os.orb.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4C561F4D2E81E0AE004F22A5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y4DTBZH68D;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Orb;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_SWIFT_FLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.os.orb.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4C561F3B2E81E0AD004F22A5 /* Build configuration list for PBXProject "Orb Invest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4C561F492E81E0AE004F22A5 /* Debug */,
+				4C561F4A2E81E0AE004F22A5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4C561F4B2E81E0AE004F22A5 /* Build configuration list for PBXNativeTarget "Orb Invest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4C561F4C2E81E0AE004F22A5 /* Debug */,
+				4C561F4D2E81E0AE004F22A5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		4CF8CA122E8B03A100887E6B /* XCLocalSwiftPackageReference "Dependencies/Macros" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Dependencies/Macros;
+		};
+		4CFF4CB52EBCDEF90043DB7E /* XCLocalSwiftPackageReference "Dependencies/API" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Dependencies/API;
+		};
+		F017E6142ED914F5001B1CF5 /* XCLocalSwiftPackageReference "Dependencies/SolanaSwift" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Dependencies/SolanaSwift;
+		};
+		F05467932EDED13E00037CF4 /* XCLocalSwiftPackageReference "Dependencies/OrbIintel" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Dependencies/OrbIintel;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4C2927FA2EBCDA37002827FB /* XCRemoteSwiftPackageReference "Nuke" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Nuke.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.8.0;
+			};
+		};
+		4C2927FD2EBCDA50002827FB /* XCRemoteSwiftPackageReference "SVGKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SVGKit/SVGKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+		4C6C5BD12EC0BB4D002744F7 /* XCRemoteSwiftPackageReference "SFSafeSymbols" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SFSafeSymbols/SFSafeSymbols.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
+		4CF8BFF72E8B01E600887E6B /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.22.3;
+			};
+		};
+		4CFF4CB22EBCDE520043DB7E /* XCRemoteSwiftPackageReference "privy-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/privy-io/privy-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+		F007B8552EDE201D00E7BD41 /* XCRemoteSwiftPackageReference "qrcode" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dagronf/qrcode.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 27.12.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4C2927FC2EBCDA37002827FB /* NukeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C2927FA2EBCDA37002827FB /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeUI;
+		};
+		4C2927FF2EBCDA50002827FB /* SVGKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C2927FD2EBCDA50002827FB /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKit;
+		};
+		4C6C5BD22EC0BB4D002744F7 /* SFSafeSymbols */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C6C5BD12EC0BB4D002744F7 /* XCRemoteSwiftPackageReference "SFSafeSymbols" */;
+			productName = SFSafeSymbols;
+		};
+		4CF8BFF82E8B01E600887E6B /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4CF8BFF72E8B01E600887E6B /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+		4CF8CA102E8B036C00887E6B /* Dependency */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Dependency;
+		};
+		4CF8CA132E8B03A100887E6B /* Dependency */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Dependency;
+		};
+		4CFF4CB32EBCDE520043DB7E /* Privy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4CFF4CB22EBCDE520043DB7E /* XCRemoteSwiftPackageReference "privy-ios" */;
+			productName = Privy;
+		};
+		4CFF4CB62EBCDEF90043DB7E /* OpenAPIClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OpenAPIClient;
+		};
+		F007B8562EDE201E00E7BD41 /* QRCode */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F007B8552EDE201D00E7BD41 /* XCRemoteSwiftPackageReference "qrcode" */;
+			productName = QRCode;
+		};
+		F017E6152ED914F5001B1CF5 /* SolanaSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SolanaSwift;
+		};
+		F05464F72EDED05E00037CF4 /* OrbIntel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbIntel;
+		};
+		F05464F92EDED05E00037CF4 /* OrbOne */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbOne;
+		};
+		F054678C2EDED10400037CF4 /* OrbIntel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbIntel;
+		};
+		F054678E2EDED10400037CF4 /* OrbOne */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbOne;
+		};
+		F05467912EDED12A00037CF4 /* OrbIntel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbIntel;
+		};
+		F05467942EDED13E00037CF4 /* OrbIntel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbIntel;
+		};
+		F05467962EDED13E00037CF4 /* OrbOne */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbOne;
+		};
+		F07480332EDECD780086C6FA /* OrbIntel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbIntel;
+		};
+		F07851282EDECBF80043F3B2 /* OrbIntel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OrbIntel;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 4C561F382E81E0AD004F22A5 /* Project object */;
+}

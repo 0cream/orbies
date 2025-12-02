@@ -1,0 +1,9 @@
+import ComposableArchitecture
+
+extension {{ name }}Coordinator {
+    @ObservableState
+    struct State {
+        var path = StackState<Path.State>()
+        var root = {{ root_name }}Feature.State()
+    }
+} 

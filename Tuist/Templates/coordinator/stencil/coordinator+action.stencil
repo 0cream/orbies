@@ -1,0 +1,29 @@
+import ComposableArchitecture
+
+extension {{ name }}Coordinator {
+    @CasePathable
+    enum Action {
+        enum Delegate {
+            // delegate actions
+        }
+        
+        case path(StackActionOf<Path>)
+        case destination(PresentationAction<Destination.Action>)
+        case root({{ root_name }}Feature.Action)
+        case delegate(Delegate)
+    }
+}
+
+extension {{ name }}Coordinator {
+    @Reducer
+    enum Path {
+        
+    }
+} 
+
+extension {{ name }}Coordinator {
+    @Reducer
+    enum Destination {
+        
+    }
+} 

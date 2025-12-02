@@ -1,0 +1,207 @@
+[
+  {
+    "id": "1",
+    "title": "Solana's Network Activity Hits All-Time High",
+    "subtitle": "Daily transactions surge past 50M as DeFi adoption accelerates",
+    "content": "# Solana Breaks Records\n\nSolana's network has reached unprecedented levels of activity, with **daily transactions exceeding 50 million** for the first time in its history.\n\n## Key Highlights\n\n- Transaction fees remain under $0.01\n- Network uptime at 99.9%\n- New DEX protocols launching weekly\n\nThis growth is largely attributed to the rise of new **DeFi protocols** and increased **NFT trading activity**. Major projects like Jupiter and Marinade Finance are seeing record volumes.\n\nAnalysts predict this momentum will continue as more institutional players enter the Solana ecosystem.",
+    "tokens": [
+      {
+        "id": "So11111111111111111111111111111111111111112",
+        "name": "Solana",
+        "symbol": "SOL",
+        "imageUrl": "we"
+      },
+      {
+        "id": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "imageUrl": "wt"
+      },
+      {
+        "id": "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
+        "name": "Jupiter",
+        "symbol": "JUP",
+        "imageUrl": "wwthn"
+      }
+    ],
+    "publishedAt": "2025-11-27T20:00:00Z"
+  },
+  {
+    "id": "2",
+    "title": "Major DeFi Protocol Launches on Solana",
+    "subtitle": "Liquidity pools offering up to 25% APY attract millions in TVL",
+    "content": "# New DeFi Powerhouse Emerges\n\nA major decentralized finance protocol has officially launched on Solana, bringing **innovative yield strategies** to the ecosystem.\n\n## What's New\n\n- Automated liquidity optimization\n- Cross-chain bridge integration\n- Enhanced security audits by top firms\n\nEarly adopters are already seeing impressive returns, with some liquidity pools offering up to **25% APY**. The protocol secured $50M in funding from leading VCs before launch.",
+    "tokens": [
+      {
+        "id": "So11111111111111111111111111111111111111112",
+        "name": "Solana",
+        "symbol": "SOL",
+        "imageUrl": "we"
+      },
+      {
+        "id": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
+        "name": "Marinade",
+        "symbol": "mSOL",
+        "imageUrl": "wt"
+      }
+    ],
+    "publishedAt": "2025-11-27T14:00:00Z"
+  },
+  {
+    "id": "3",
+    "title": "NFT Marketplace Volume Doubles",
+    "subtitle": "Tensor and Magic Eden report record-breaking trading activity",
+    "content": "# NFT Renaissance on Solana\n\nTrading volume on Solana's leading NFT marketplaces has **doubled in the past week**, signaling renewed interest in digital collectibles.\n\n## Market Dynamics\n\n- Tensor leads with $100M weekly volume\n- Blue-chip collections seeing 50%+ gains\n- New creators flocking to ecosystem\n\nThe surge is attributed to both new collection launches and renewed interest in established projects. Floor prices for top collections have risen significantly.",
+    "tokens": [
+      {
+        "id": "So11111111111111111111111111111111111111112",
+        "name": "Solana",
+        "symbol": "SOL",
+        "imageUrl": "we"
+      },
+      {
+        "id": "TNSRxcUxoT9xBG3de7PiJyTDYu7kskLqcpddxnEJAS6",
+        "name": "Tensor",
+        "symbol": "TNSR",
+        "imageUrl": "wwthn"
+      }
+    ],
+    "publishedAt": "2025-11-27T08:00:00Z"
+  },
+  {
+    "id": "4",
+    "title": "Stablecoin Adoption Accelerates",
+    "subtitle": "USDC transfers on Solana surpass Ethereum for first time",
+    "content": "# Stablecoin Milestone Achieved\n\nFor the first time, **USDC transfer volume on Solana** has exceeded that of Ethereum, marking a significant shift in DeFi activity.\n\n## Breaking Down the Numbers\n\n- Daily USDC transfers: $2.3B\n- Average transaction cost: $0.0001\n- Settlement time: Sub-second\n\nThis milestone highlights Solana's efficiency advantage for payments and DeFi. Major payment processors are now integrating Solana for **instant, low-cost settlements**.",
+    "tokens": [
+      {
+        "id": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "imageUrl": "wt"
+      },
+      {
+        "id": "So11111111111111111111111111111111111111112",
+        "name": "Solana",
+        "symbol": "SOL",
+        "imageUrl": "we"
+      }
+    ],
+    "publishedAt": "2025-11-26T20:00:00Z"
+  },
+  {
+    "id": "5",
+    "title": "Institutional Interest Grows",
+    "subtitle": "Major funds allocate to Solana ecosystem projects",
+    "content": "# Wall Street Looks to Solana\n\nSeveral major institutional investors have announced significant allocations to Solana-based projects, signaling growing mainstream acceptance.\n\n## Investment Highlights\n\n- $500M in new capital commitments\n- Focus on DeFi infrastructure\n- Long-term strategic partnerships\n\nLeading venture capital firms are particularly interested in projects building **cross-chain infrastructure** and **real-world asset tokenization** on Solana.",
+    "tokens": [
+      {
+        "id": "So11111111111111111111111111111111111111112",
+        "name": "Solana",
+        "symbol": "SOL",
+        "imageUrl": "we"
+      },
+      {
+        "id": "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
+        "name": "Jupiter",
+        "symbol": "JUP",
+        "imageUrl": "wwthn"
+      }
+    ],
+    "publishedAt": "2025-11-26T15:00:00Z"
+  },
+  {
+    "id": "6",
+    "title": "Gaming Projects Launch Season 2",
+    "subtitle": "Play-to-earn games attract millions of new users",
+    "content": "# Gaming Takes Center Stage\n\nMultiple gaming projects on Solana are launching major updates, bringing **immersive experiences** and new economic models to players worldwide.\n\n## Gaming Evolution\n\n- 5M+ active gamers on-chain\n- New AAA partnerships announced\n- Mobile-first gaming experiences\n\nThe low transaction costs and fast finality make Solana ideal for **blockchain gaming**, where frequent micro-transactions are essential.",
+    "tokens": [
+      {
+        "id": "So11111111111111111111111111111111111111112",
+        "name": "Solana",
+        "symbol": "SOL",
+        "imageUrl": "we"
+      }
+    ],
+    "publishedAt": "2025-11-26T10:00:00Z"
+  },
+  {
+    "id": "7",
+    "title": "Cross-Chain Bridge Security Enhanced",
+    "subtitle": "New protocols implement advanced security measures",
+    "content": "# Bridging Gets Safer\n\nLeading cross-chain bridge protocols on Solana have implemented **enhanced security measures**, including multi-signature requirements and insurance pools.\n\n## Security First\n\n- $100M insurance fund established\n- Real-time monitoring systems\n- Third-party security audits\n\nThese improvements come after the industry learned valuable lessons from past exploits. Users can now bridge assets with greater confidence.",
+    "tokens": [
+      {
+        "id": "So11111111111111111111111111111111111111112",
+        "name": "Solana",
+        "symbol": "SOL",
+        "imageUrl": "we"
+      },
+      {
+        "id": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "imageUrl": "wt"
+      }
+    ],
+    "publishedAt": "2025-11-25T18:00:00Z"
+  },
+  {
+    "id": "8",
+    "title": "Mobile Wallet Adoption Soars",
+    "subtitle": "New generation discovers crypto through mobile-first apps",
+    "content": "# Mobile-First Revolution\n\nMobile wallet downloads have **surged 300%** this quarter, with younger demographics leading the adoption of Solana-based payment apps.\n\n## Mobile Momentum\n\n- 10M+ mobile wallet users\n- Seamless onboarding experience\n- Integration with popular apps\n\nThe ease of use and instant transactions are making Solana the **preferred choice** for mobile payments and remittances globally.",
+    "tokens": [
+      {
+        "id": "So11111111111111111111111111111111111111112",
+        "name": "Solana",
+        "symbol": "SOL",
+        "imageUrl": "we"
+      },
+      {
+        "id": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "imageUrl": "wt"
+      }
+    ],
+    "publishedAt": "2025-11-25T12:00:00Z"
+  },
+  {
+    "id": "9",
+    "title": "Developer Activity Reaches New Peak",
+    "subtitle": "Thousands of new projects building on Solana",
+    "content": "# Developer Ecosystem Thrives\n\nThe number of active developers building on Solana has reached an **all-time high**, with thousands of new projects in various stages of development.\n\n## Developer Stats\n\n- 5,000+ active developers\n- 100+ projects launching monthly\n- Growing education initiatives\n\nEnhanced developer tools, comprehensive documentation, and strong community support are driving this growth in the **Solana developer ecosystem**.",
+    "tokens": [
+      {
+        "id": "So11111111111111111111111111111111111111112",
+        "name": "Solana",
+        "symbol": "SOL",
+        "imageUrl": "we"
+      }
+    ],
+    "publishedAt": "2025-11-25T08:00:00Z"
+  },
+  {
+    "id": "10",
+    "title": "Real-World Asset Tokenization Expands",
+    "subtitle": "Traditional assets moving on-chain via Solana",
+    "content": "# TradFi Meets DeFi\n\nReal-world assets totaling **$1B+ are now tokenized** on Solana, including real estate, commodities, and private equity.\n\n## Asset Revolution\n\n- 24/7 trading of tokenized assets\n- Fractional ownership opportunities\n- Instant settlement\n\nThis trend represents a **fundamental shift** in how traditional assets are traded, offering unprecedented liquidity and accessibility to global investors.",
+    "tokens": [
+      {
+        "id": "So11111111111111111111111111111111111111112",
+        "name": "Solana",
+        "symbol": "SOL",
+        "imageUrl": "we"
+      },
+      {
+        "id": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "imageUrl": "wt"
+      }
+    ],
+    "publishedAt": "2025-11-25T03:00:00Z"
+  }
+]
+

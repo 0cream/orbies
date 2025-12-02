@@ -1,0 +1,21 @@
+import SwiftUI
+import ComposableArchitecture
+
+@ViewAction(for: {{ name }}Feature.self)
+struct {{ name }}View: View {
+    
+    // MARK: - Properties
+    
+    let store: StoreOf<{{ name }}Feature>
+    
+    // MARK: - UI
+    
+    var body: some View {
+        VStack {
+            Text("{{ name }} View")
+                .font(.title)
+            
+            // TODO: - Add your view implementation
+        }
+    }
+} 

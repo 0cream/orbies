@@ -1,0 +1,39 @@
+import ComposableArchitecture
+import Dependencies
+
+@Reducer
+struct {{ name }}Feature {
+    
+    // MARK: - Dependencies
+    
+    // TODO: - Add your dependencies here
+    
+    // MARK: - Body
+    
+    var body: some Reducer<State, Action> {
+        Reduce { state, action in
+            switch action {
+            case let .view(action):
+                return reduce(state: &state, action: action)
+            case let .reducer(action):
+                return reduce(state: &state, action: action)
+            case .delegate:
+                return .none
+            }
+        }
+    }
+    
+    // MARK: - Reducer
+    
+    private func reduce(state: inout State, action: Action.View) -> Effect<Action> {
+        switch action {
+        // TODO: Handle view actions
+        }
+    }
+    
+    private func reduce(state: inout State, action: Action.Reducer) -> Effect<Action> {
+        switch action {
+        // TODO: Handle reducer actions
+        }
+    }
+} 

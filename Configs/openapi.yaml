@@ -1,0 +1,1224 @@
+openapi: 3.0.3
+
+info:
+  title: Orb Invest Backend API
+  version: 1.0.0
+  description: Token price indexing service with historical and real-time price data for Solana tokens
+
+servers:
+  - url: http://localhost:3001
+    description: Development server
+  - url: https://orb-invest-backend.onrender.com
+    description: Production server
+
+components:
+  schemas:
+    ApiErrorResponse:
+      title: ApiErrorResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: string
+      required:
+        - success
+        - error
+
+    IndexedToken:
+      title: IndexedToken
+      type: object
+      properties:
+        address:
+          type: string
+          description: Solana token address
+        symbol:
+          type: string
+          nullable: true
+          description: Token symbol (e.g., SOL, USDC)
+        name:
+          type: string
+          nullable: true
+          description: Token name (e.g., Solana, USD Coin)
+        decimals:
+          type: number
+          nullable: true
+          description: Token decimals (e.g., 9 for SOL, 6 for USDC)
+        logoURI:
+          type: string
+          nullable: true
+          description: Token logo image URL
+        addedAt:
+          type: number
+          description: Timestamp when token was added (milliseconds)
+        lastIndexed:
+          type: number
+          description: Timestamp of last historical price fetch (milliseconds)
+        isActive:
+          type: boolean
+          description: Whether the token is actively being tracked
+      required:
+        - address
+        - addedAt
+        - lastIndexed
+        - isActive
+
+    StoredPrice:
+      title: StoredPrice
+      type: object
+      properties:
+        tokenAddress:
+          type: string
+          description: Solana token address
+        price:
+          type: number
+          description: Price in USD
+        timestamp:
+          type: number
+          description: Timestamp of the price (milliseconds)
+        source:
+          type: string
+          enum: [birdeye, jupiter]
+          description: Data source
+        interval:
+          type: string
+          enum: ["3m", "30m", "8H"]
+          nullable: true
+          description: Time interval (only for historical prices, H = hours uppercase)
+      required:
+        - tokenAddress
+        - price
+        - timestamp
+        - source
+
+    QueueItem:
+      title: QueueItem
+      type: object
+      properties:
+        address:
+          type: string
+          description: Token address
+        symbol:
+          type: string
+          nullable: true
+          description: Token symbol
+        name:
+          type: string
+          nullable: true
+          description: Token name
+      required:
+        - address
+
+    QueueStatus:
+      title: QueueStatus
+      type: object
+      properties:
+        isProcessing:
+          type: boolean
+          description: Whether a token is currently being processed
+        currentToken:
+          type: string
+          nullable: true
+          description: Address of token currently being indexed
+        queueLength:
+          type: number
+          description: Number of tokens waiting in queue
+        queue:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueueItem'
+          description: List of tokens waiting to be processed
+      required:
+        - isProcessing
+        - currentToken
+        - queueLength
+        - queue
+
+    EventToken:
+      title: EventToken
+      type: object
+      properties:
+        id:
+          type: string
+          description: Token address
+        name:
+          type: string
+          description: Token name
+        symbol:
+          type: string
+          description: Token symbol
+        imageUrl:
+          type: string
+          description: Token image URL
+      required:
+        - id
+        - name
+        - symbol
+        - imageUrl
+
+    ImportantEvent:
+      title: ImportantEvent
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique event identifier
+        title:
+          type: string
+          description: Event title
+        subtitle:
+          type: string
+          description: Event subtitle/summary
+        content:
+          type: string
+          description: Full event content in Markdown format
+        tokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventToken'
+          description: Related tokens
+        publishedAt:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp when the event was published
+      required:
+        - id
+        - title
+        - subtitle
+        - content
+        - tokens
+        - publishedAt
+
+    ErrorResponse:
+      title: ErrorResponse
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: string
+          description: Error message
+      required:
+        - success
+        - error
+
+paths:
+  /health:
+    get:
+      operationId: healthCheck
+      summary: Health check
+      description: Returns the health status of the API and its dependencies
+      tags:
+        - System
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                title: HealthCheckResponse
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ok]
+                  timestamp:
+                    type: string
+                    format: date-time
+                  redis:
+                    type: boolean
+                    description: Redis connection status
+                required:
+                  - status
+                  - timestamp
+                  - redis
+
+  /api/tokens:
+    post:
+      operationId: addToken
+      summary: Add token to index
+      description: Adds a new token to the indexing queue. Historical prices will be fetched automatically.
+      tags:
+        - Tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: AddTokenRequest
+              type: object
+              properties:
+                address:
+                  type: string
+                  description: Solana token address
+                  example: "So11111111111111111111111111111111111111112"
+                symbol:
+                  type: string
+                  description: Token symbol (optional)
+                  example: "SOL"
+                name:
+                  type: string
+                  description: Token name (optional)
+                  example: "Solana"
+              required:
+                - address
+      responses:
+        '200':
+          description: Token added successfully
+          content:
+            application/json:
+              schema:
+                title: AddTokenResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  data:
+                    $ref: '#/components/schemas/IndexedToken'
+                  message:
+                    type: string
+                  queue:
+                    type: object
+                    properties:
+                      position:
+                        type: number
+                        description: Position in queue
+                      isProcessing:
+                        type: boolean
+                        description: Whether indexing is active
+                      currentToken:
+                        type: string
+                        nullable: true
+                        description: Currently processing token
+                    required:
+                      - position
+                      - isProcessing
+                      - currentToken
+                required:
+                  - success
+                  - data
+                  - message
+                  - queue
+        '400':
+          description: Invalid request (missing address)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '409':
+          description: Token already indexed
+          content:
+            application/json:
+              schema:
+                title: TokenAlreadyExistsResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [false]
+                  error:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/IndexedToken'
+                required:
+                  - success
+                  - error
+                  - data
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+    get:
+      operationId: getAllTokens
+      summary: Get all indexed tokens
+      description: Returns a list of all tokens currently being tracked
+      tags:
+        - Tokens
+      responses:
+        '200':
+          description: Tokens retrieved successfully
+          content:
+            application/json:
+              schema:
+                title: GetAllTokensResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IndexedToken'
+                  count:
+                    type: number
+                    description: Number of tokens
+                required:
+                  - success
+                  - data
+                  - count
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/tokens/batch:
+    post:
+      operationId: addTokensBatch
+      summary: Add multiple tokens
+      description: |
+        Adds multiple tokens to the indexing queue in a single request.
+        Perfect for bulk imports. Maximum 50 tokens per request.
+        
+        **Fast Response:** Returns immediately after validation. 
+        Tokens are processed in the background. Use queue status endpoint to track progress.
+        
+        Tokens will be processed sequentially, one at a time.
+      tags:
+        - Tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: AddTokensBatchRequest
+              type: object
+              properties:
+                tokens:
+                  type: array
+                  minItems: 1
+                  maxItems: 50
+                  items:
+                    type: object
+                    properties:
+                      address:
+                        type: string
+                        description: Solana token address
+                      symbol:
+                        type: string
+                        description: Token symbol (optional)
+                      name:
+                        type: string
+                        description: Token name (optional)
+                    required:
+                      - address
+              required:
+                - tokens
+            example:
+              tokens:
+                - address: "So11111111111111111111111111111111111111112"
+                  symbol: "SOL"
+                  name: "Solana"
+                - address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+                  symbol: "USDC"
+                  name: "USD Coin"
+      responses:
+        '200':
+          description: Batch processed successfully
+          content:
+            application/json:
+              schema:
+                title: AddTokensBatchResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  data:
+                    type: object
+                    properties:
+                      accepted:
+                        type: number
+                        description: Number of NEW tokens accepted for indexing
+                      skipped:
+                        type: number
+                        description: Number of tokens already indexed or in queue
+                      rejected:
+                        type: number
+                        description: Number of tokens rejected (invalid format or errors)
+                      total:
+                        type: number
+                        description: Total tokens in request
+                    required:
+                      - accepted
+                      - skipped
+                      - rejected
+                      - total
+                  message:
+                    type: string
+                    description: Status message
+                  skipped:
+                    type: array
+                    nullable: true
+                    description: List of skipped tokens (already indexed or in queue)
+                    items:
+                      type: object
+                      properties:
+                        address:
+                          type: string
+                        symbol:
+                          type: string
+                          nullable: true
+                        status:
+                          type: string
+                          enum: [skipped]
+                        reason:
+                          type: string
+                      required:
+                        - address
+                        - status
+                        - reason
+                  rejected:
+                    type: array
+                    nullable: true
+                    description: List of rejected tokens (only if any were rejected)
+                    items:
+                      type: object
+                      properties:
+                        address:
+                          type: string
+                        status:
+                          type: string
+                          enum: [error]
+                        reason:
+                          type: string
+                      required:
+                        - address
+                        - status
+                        - reason
+                  queue:
+                    type: object
+                    properties:
+                      length:
+                        type: number
+                        description: Number of tokens in queue
+                      isProcessing:
+                        type: boolean
+                        description: Whether indexing is active
+                      currentToken:
+                        type: string
+                        nullable: true
+                        description: Currently processing token
+                    required:
+                      - length
+                      - isProcessing
+                      - currentToken
+                required:
+                  - success
+                  - data
+                  - message
+                  - queue
+        '400':
+          description: Invalid request (empty array, too many tokens, or invalid format)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/tokens/search:
+    get:
+      operationId: searchTokens
+      summary: Search tokens
+      description: Search for tokens by name, symbol, or address. Returns matching tokens with their latest prices.
+      tags:
+        - Tokens
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search query (minimum 2 characters)
+          schema:
+            type: string
+            minLength: 2
+            example: "SOL"
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                title: SearchTokensResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        address:
+                          type: string
+                        symbol:
+                          type: string
+                          nullable: true
+                        name:
+                          type: string
+                          nullable: true
+                        addedAt:
+                          type: number
+                        lastIndexed:
+                          type: number
+                        isActive:
+                          type: boolean
+                        lastPrice:
+                          nullable: true
+                          oneOf:
+                            - type: object
+                              properties:
+                                tokenAddress:
+                                  type: string
+                                timestamp:
+                                  type: number
+                                price:
+                                  type: number
+                                source:
+                                  type: string
+                                  enum: [birdeye, jupiter]
+                              required:
+                                - tokenAddress
+                                - timestamp
+                                - price
+                                - source
+                            - type: "null"
+                      required:
+                        - address
+                        - addedAt
+                        - lastIndexed
+                        - isActive
+                        - lastPrice
+                  count:
+                    type: number
+                    description: Number of results
+                  query:
+                    type: string
+                    description: The search query used
+                required:
+                  - success
+                  - data
+                  - count
+                  - query
+        '400':
+          description: Invalid query parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/tokens/{address}:
+    get:
+      operationId: getToken
+      summary: Get specific token
+      description: Returns information about a specific indexed token
+      tags:
+        - Tokens
+      parameters:
+        - name: address
+          in: path
+          required: true
+          description: Solana token address
+          schema:
+            type: string
+          example: "So11111111111111111111111111111111111111112"
+      responses:
+        '200':
+          description: Token retrieved successfully
+          content:
+            application/json:
+              schema:
+                title: GetTokenResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  data:
+                    $ref: '#/components/schemas/IndexedToken'
+                required:
+                  - success
+                  - data
+        '400':
+          description: Invalid request (missing address)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Token not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/tokens/{address}/prices:
+    get:
+      operationId: getAllPrices
+      summary: Get all price data
+      description: |
+        Returns all price data for a token in a single request. 
+        Perfect for mobile apps - includes day (480 points, 3m), week (3360 points, 3m),
+        month (1440 points, 30m), and year (~524+ points, 8H intervals) data.
+        Note: Year data adjusts based on token creation date.
+      tags:
+        - Prices
+      parameters:
+        - name: address
+          in: path
+          required: true
+          description: Solana token address
+          schema:
+            type: string
+          example: "So11111111111111111111111111111111111111112"
+      responses:
+        '200':
+          description: All price data retrieved successfully
+          content:
+            application/json:
+              schema:
+                title: GetAllPricesResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  data:
+                    type: object
+                    properties:
+                      tokenAddress:
+                        type: string
+                      day:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/StoredPrice'
+                        description: 480 price points with 3m intervals
+                      week:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/StoredPrice'
+                        description: 3360 price points with 3m intervals
+                      month:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/StoredPrice'
+                        description: 1440 price points with 30m intervals
+                      year:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/StoredPrice'
+                        description: Up to 1095 price points with 8H intervals (adjusts based on token creation date)
+                    required:
+                      - tokenAddress
+                      - day
+                      - week
+                      - month
+                      - year
+                  indexing:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        enum: [complete, indexing, queued, pending]
+                        description: Current indexing status
+                      message:
+                        type: string
+                        nullable: true
+                        description: Human-readable status message
+                      lastIndexed:
+                        type: number
+                        description: Timestamp of last indexing (milliseconds)
+                    required:
+                      - status
+                      - message
+                      - lastIndexed
+                required:
+                  - success
+                  - data
+                  - indexing
+        '404':
+          description: Token not indexed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/tokens/{address}/prices/historical:
+    get:
+      operationId: getHistoricalPrices
+      summary: Get historical prices
+      description: Returns historical price data for a token. Data is fetched from Birdeye API with aligned timestamps.
+      tags:
+        - Prices
+      parameters:
+        - name: address
+          in: path
+          required: true
+          description: Solana token address
+          schema:
+            type: string
+          example: "So11111111111111111111111111111111111111112"
+        - name: range
+          in: query
+          required: false
+          description: Time range for historical data
+          schema:
+            type: string
+            enum: ["1d", "1w", "1m", "1y"]
+            default: "1d"
+          example: "1d"
+      responses:
+        '200':
+          description: Historical prices retrieved successfully
+          content:
+            application/json:
+              schema:
+                title: GetHistoricalPricesResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  data:
+                    type: object
+                    properties:
+                      tokenAddress:
+                        type: string
+                        description: Token address
+                      range:
+                        type: string
+                        enum: ["1d", "1w", "1m", "1y"]
+                        description: Time range
+                      prices:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/StoredPrice'
+                        description: Array of price points
+                      count:
+                        type: number
+                        description: Number of price points
+                    required:
+                      - tokenAddress
+                      - range
+                      - prices
+                      - count
+                required:
+                  - success
+                  - data
+        '400':
+          description: Invalid request (missing address or invalid range)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Token not indexed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/tokens/{address}/prices/realtime:
+    get:
+      operationId: getRealtimePrice
+      summary: Get latest price
+      description: Returns the most recent price for a token from historical data. In production, prices are updated every 3 minutes.
+      tags:
+        - Prices
+      parameters:
+        - name: address
+          in: path
+          required: true
+          description: Solana token address
+          schema:
+            type: string
+          example: "So11111111111111111111111111111111111111112"
+      responses:
+        '200':
+          description: Real-time price retrieved successfully
+          content:
+            application/json:
+              schema:
+                title: GetRealtimePriceResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  data:
+                    $ref: '#/components/schemas/StoredPrice'
+                required:
+                  - success
+                  - data
+        '400':
+          description: Invalid request (missing address)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Token not indexed or price not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/indexing/queue:
+    get:
+      operationId: getQueueStatus
+      summary: Get indexing queue status
+      description: Returns the current status of the token indexing queue, including what's being processed and what's waiting.
+      tags:
+        - System
+      responses:
+        '200':
+          description: Queue status retrieved successfully
+          content:
+            application/json:
+              schema:
+                title: GetQueueStatusResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  data:
+                    $ref: '#/components/schemas/QueueStatus'
+                required:
+                  - success
+                  - data
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/admin/clear-all:
+    post:
+      operationId: clearAllData
+      summary: Clear all data
+      description: |
+        **DANGER:** Clears all data from the Redis database. 
+        Requires explicit confirmation to proceed. Use with caution!
+      tags:
+        - Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: ClearAllDataRequest
+              type: object
+              properties:
+                confirm:
+                  type: string
+                  description: Must be exactly "DELETE_ALL_DATA" to proceed
+                  example: "DELETE_ALL_DATA"
+              required:
+                - confirm
+      responses:
+        '200':
+          description: All data cleared successfully
+          content:
+            application/json:
+              schema:
+                title: ClearAllDataResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  message:
+                    type: string
+                required:
+                  - success
+                  - message
+        '400':
+          description: Confirmation required or incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/admin/refresh-metadata:
+    post:
+      operationId: refreshMetadata
+      summary: Refresh metadata for all tokens
+      description: |
+        Triggers a background task to refresh metadata (symbol, name, decimals, logoURI) 
+        for all existing tokens from Jupiter API. Useful for updating old tokens that 
+        were added before automatic metadata fetching was implemented.
+      tags:
+        - Admin
+      responses:
+        '200':
+          description: Metadata refresh started successfully
+          content:
+            application/json:
+              schema:
+                title: RefreshMetadataResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  message:
+                    type: string
+                  progress:
+                    type: object
+                    properties:
+                      current:
+                        type: number
+                        description: Current token being processed
+                      total:
+                        type: number
+                        description: Total tokens to process
+                      updated:
+                        type: number
+                        description: Successfully updated tokens
+                      failed:
+                        type: number
+                        description: Failed tokens
+                    required:
+                      - current
+                      - total
+                      - updated
+                      - failed
+                required:
+                  - success
+                  - message
+                  - progress
+        '409':
+          description: Metadata refresh already in progress
+          content:
+            application/json:
+              schema:
+                title: RefreshInProgressResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [false]
+                  error:
+                    type: string
+                  progress:
+                    type: object
+                    properties:
+                      current:
+                        type: number
+                      total:
+                        type: number
+                      updated:
+                        type: number
+                      failed:
+                        type: number
+                required:
+                  - success
+                  - error
+                  - progress
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/admin/refresh-metadata/status:
+    get:
+      operationId: getRefreshMetadataStatus
+      summary: Get metadata refresh status
+      description: Returns the current status of the metadata refresh background task
+      tags:
+        - Admin
+      responses:
+        '200':
+          description: Refresh status retrieved successfully
+          content:
+            application/json:
+              schema:
+                title: RefreshStatusResponse
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  isRefreshing:
+                    type: boolean
+                    description: Whether a refresh is currently in progress
+                  progress:
+                    type: object
+                    properties:
+                      current:
+                        type: number
+                        description: Current token being processed
+                      total:
+                        type: number
+                        description: Total tokens to process
+                      updated:
+                        type: number
+                        description: Successfully updated tokens
+                      failed:
+                        type: number
+                        description: Failed tokens
+                    required:
+                      - current
+                      - total
+                      - updated
+                      - failed
+                required:
+                  - success
+                  - isRefreshing
+                  - progress
+
+  /api/events:
+    get:
+      operationId: getEvents
+      summary: Get all important events
+      description: Returns a list of curated important events related to the Solana ecosystem
+      tags:
+        - Events
+      responses:
+        '200':
+          description: Events retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ImportantEvent'
+                  count:
+                    type: integer
+                    description: Number of events returned
+                required:
+                  - success
+                  - data
+                  - count
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/admin/events:
+    put:
+      operationId: replaceEvents
+      summary: Replace all events
+      description: Replaces all existing events with a new set of events. This completely overwrites the previous events.
+      tags:
+        - Admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                events:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ImportantEvent'
+              required:
+                - events
+      responses:
+        '200':
+          description: Events replaced successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum: [true]
+                  message:
+                    type: string
+                  count:
+                    type: integer
+                    description: Number of events now available
+                required:
+                  - success
+                  - message
+                  - count
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+tags:
+  - name: System
+    description: System health and status endpoints
+  - name: Tokens
+    description: Token management endpoints
+  - name: Prices
+    description: Price data endpoints (historical and real-time)
+  - name: Events
+    description: Important ecosystem events and news
+  - name: Admin
+    description: Administrative endpoints (use with caution)
+
+
